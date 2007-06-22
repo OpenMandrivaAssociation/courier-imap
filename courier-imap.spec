@@ -57,6 +57,7 @@ chmod 644 maildir/README.sharedfolders.html imap/README.html
 
 
 %build
+%serverbuild
 %configure \
     --enable-unicode \
     --libexec=%{_libdir}/%{name} \
