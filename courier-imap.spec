@@ -1,6 +1,6 @@
 %define name	courier-imap
 %define version 4.1.2
-%define release %mkrel 3
+%define release %mkrel 4
 
 Name:		%{name}
 Version:	%{version}
@@ -17,7 +17,10 @@ Source4:	%{name}.pop3d-ssl-init
 Patch0:		courier-imap-4.1.1-pam_service_name.diff
 Requires:	courier-base = %{version}
 Requires:	courier-authdaemon
-Requires(pre):	rpm-helper
+Requires(pre):	rpm-helper >= 0.19
+Requires(post):	rpm-helper >= 0.19
+Requires(preun):	rpm-helper >= 0.19
+Requires(postun):	rpm-helper >= 0.19
 BuildRequires:	gdbm-devel
 BuildRequires:	openssl-devel
 BuildRequires:	courier-authlib-devel
@@ -58,7 +61,7 @@ chmod 644 maildir/README.sharedfolders.html imap/README.html
 
 %build
 %serverbuild
-%configure \
+%configure2_5x \
     --enable-unicode \
     --libexec=%{_libdir}/%{name} \
     --datadir=%{_datadir}/%{name} \
@@ -137,61 +140,16 @@ configuration files have no effect.
 EOF
 
 # replace SSL certs configuration with our own
-install -d -m 755 %{buildroot}%{_sysconfdir}/pki/tls
-cat >  %{buildroot}%{_sysconfdir}/pki/tls/courier-imapd.cnf << EOF
-[ req ]
-default_bits            = 1024
-encrypt_key             = no
-prompt                  = no
-distinguished_name      = req_dn
-req_extensions          = req_ext
-
-[ req_dn ]
-commonName		= \$ENV::HOSTNAME
-organizationalUnitName	= self-signed courier-imap cert
-emailAddress		= root@\$ENV::HOSTNAME
-
-[ req_ext ]
-basicConstraints        = CA:FALSE
-EOF
-cat >  %{buildroot}%{_sysconfdir}/pki/tls/courier-pop3d.cnf << EOF
-[ req ]
-default_bits            = 1024
-encrypt_key             = no
-prompt                  = no
-distinguished_name      = req_dn
-req_extensions          = req_ext
-
-[ req_dn ]
-commonName		= \$ENV::HOSTNAME
-organizationalUnitName	= self-signed courier-pop3 cert
-emailAddress		= root@\$ENV::HOSTNAME
-
-[ req_ext ]
-basicConstraints        = CA:FALSE
-EOF
 rm -f %{buildroot}%{_sysconfdir}/courier/imapd.cnf
 rm -f %{buildroot}%{_sysconfdir}/courier/pop3d.cnf
 perl -pi \
-    -e 's|TLS_CERTFILE=.*|TLS_CERTFILE=%{_sysconfdir}/pki/tls/private/courier-imapd.pem|'\
+    -e 's|TLS_CERTFILE=.*|TLS_CERTFILE=%{_sysconfdir}/pki/tls/private/courier-imap.pem|'\
     %{buildroot}%{_sysconfdir}/courier/imapd-ssl
 perl -pi \
-    -e 's|TLS_CERTFILE=.*|TLS_CERTFILE=%{_sysconfdir}/pki/tls/private/courier-pop3d.pem|'\
+    -e 's|TLS_CERTFILE=.*|TLS_CERTFILE=%{_sysconfdir}/pki/tls/private/courier-pop.pem|'\
     %{buildroot}%{_sysconfdir}/courier/pop3d-ssl
 
 %post
-# generate SSL cert if needed
-if [ $1 = 1 ]; then
-    openssl req -new -x509 -days 365 \
-        -config %{_sysconfdir}/pki/tls/courier-imapd.cnf \
-        -keyout %{_sysconfdir}/pki/tls/private/courier-imapd.pem \
-        -out %{_sysconfdir}/pki/tls/certs/courier-imapd.pem
-    # courier-imap requires cert and key in the same file
-    cat %{_sysconfdir}/pki/tls/certs/courier-imapd.pem \
-        >> %{_sysconfdir}/pki/tls/private/courier-imapd.pem
-    # enforce strict perms
-    chmod 600 %{_sysconfdir}/pki/tls/private/courier-imapd.pem
-fi
 if [ -f %{_sysconfdir}/courier/imapd.rpmnew ]; then
     %{_libdir}/courier-authlib/sysconftool %{_sysconfdir}/courier/imapd.rpmnew >/dev/null
 fi
@@ -200,24 +158,14 @@ if [ -f %{_sysconfdir}/courier/imapd-ssl.rpmnew ]; then
 fi
 %_post_service courier-imapd
 %_post_service courier-imapd-ssl
+%create_ssl_certificate courier-imap true
 
 %preun 
 %_preun_service courier-imapd
 %_preun_service courier-imapd-ssl
 
 %post -n courier-pop
-# generate SSL cert if needed
-if [ $1 = 1 ]; then
-    openssl req -new -x509 -days 365 \
-        -config %{_sysconfdir}/pki/tls/courier-pop3d.cnf \
-        -keyout %{_sysconfdir}/pki/tls/private/courier-pop3d.pem \
-        -out %{_sysconfdir}/pki/tls/certs/courier-pop3d.pem
-    # courier-pop requires cert and key in the same file
-    cat %{_sysconfdir}/pki/tls/certs/courier-pop3d.pem \
-        >> %{_sysconfdir}/pki/tls/private/courier-pop3d.pem
-    # enforce strict perms
-    chmod 600 %{_sysconfdir}/pki/tls/private/courier-pop3d.pem
-fi
+%create_ssl_certificate courier-pop true
 if [ -f %{_sysconfdir}/courier/pop3d.rpmnew ]; then
     %{_libdir}/courier-authlib/sysconftool %{_sysconfdir}/courier/pop3d.rpmnew >/dev/null
 fi
@@ -268,7 +216,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/pam.d/courier-imap
 %config(noreplace) %{_sysconfdir}/courier/imapd
 %config(noreplace) %{_sysconfdir}/courier/imapd-ssl
-%config(noreplace) %{_sysconfdir}/pki/tls/courier-imapd.cnf
 %{_initrddir}/courier-imapd
 %{_initrddir}/courier-imapd-ssl
 %{_bindir}/imapd
@@ -283,7 +230,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/pam.d/courier-pop3
 %config(noreplace) %{_sysconfdir}/courier/pop3d
 %config(noreplace) %{_sysconfdir}/courier/pop3d-ssl
-%config(noreplace) %{_sysconfdir}/pki/tls/courier-pop3d.cnf
 %{_initrddir}/courier-pop3d
 %{_initrddir}/courier-pop3d-ssl
 %{_bindir}/pop3d
