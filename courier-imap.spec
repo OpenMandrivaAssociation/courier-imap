@@ -1,6 +1,6 @@
 %define name	courier-imap
-%define version 4.1.2
-%define release %mkrel 4
+%define version 4.3.0
+%define release %mkrel 1
 
 Name:		%{name}
 Version:	%{version}
