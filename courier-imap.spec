@@ -25,7 +25,6 @@ BuildRequires:	gdbm-devel
 BuildRequires:	openssl-devel
 BuildRequires:	courier-authlib-devel
 BuildRequires:	courier-authdaemon
-BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 Courier-IMAP is an IMAP server for Maildir mailboxes. This package contains
