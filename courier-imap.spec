@@ -1,6 +1,6 @@
 %define name	courier-imap
 %define version 4.3.0
-%define release %mkrel 1
+%define release %mkrel 2
 
 Name:		%{name}
 Version:	%{version}
@@ -17,7 +17,7 @@ Source4:	%{name}.pop3d-ssl-init
 Patch0:		courier-imap-4.1.1-pam_service_name.diff
 Requires:	courier-base = %{version}
 Requires:	courier-authdaemon
-Requires(pre):	rpm-helper >= 0.19
+Requires(pre):	rpm-helper >= 0.21
 Requires(post):	rpm-helper >= 0.19
 Requires(preun):	rpm-helper >= 0.19
 Requires(postun):	rpm-helper >= 0.19
@@ -158,14 +158,14 @@ if [ -f %{_sysconfdir}/courier/imapd-ssl.rpmnew ]; then
 fi
 %_post_service courier-imapd
 %_post_service courier-imapd-ssl
-%create_ssl_certificate courier-imap true
+%_create_ssl_certificate courier-imap -b
 
 %preun 
 %_preun_service courier-imapd
 %_preun_service courier-imapd-ssl
 
 %post -n courier-pop
-%create_ssl_certificate courier-pop true
+%_create_ssl_certificate courier-pop -b
 if [ -f %{_sysconfdir}/courier/pop3d.rpmnew ]; then
     %{_libdir}/courier-authlib/sysconftool %{_sysconfdir}/courier/pop3d.rpmnew >/dev/null
 fi
