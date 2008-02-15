@@ -1,6 +1,6 @@
 %define name	courier-imap
 %define version 4.3.0
-%define release %mkrel 2
+%define release %mkrel 3
 
 Name:		%{name}
 Version:	%{version}
@@ -25,6 +25,7 @@ BuildRequires:	gdbm-devel
 BuildRequires:	openssl-devel
 BuildRequires:	courier-authlib-devel
 BuildRequires:	courier-authdaemon
+BuildRequires:	rpm-helper >= 0.21
 BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
