@@ -5,7 +5,7 @@
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-Summary:	Courier-IMAP is an IMAP server that uses Maildirs
+Summary:	IMAP server that uses Maildirs
 License:	GPL
 Group:		System/Servers
 URL:		http://www.courier-mta.org
