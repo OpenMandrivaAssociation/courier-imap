@@ -1,5 +1,5 @@
 %define name	courier-imap
-%define version 4.4.0
+%define version 4.4.1
 %define release %mkrel 1
 
 Name:		%{name}
@@ -26,7 +26,7 @@ BuildRequires:	openssl-devel
 BuildRequires:	courier-authlib-devel
 BuildRequires:	courier-authdaemon
 BuildRequires:	rpm-helper >= 0.21
-BuildRoot:	%{_tmppath}/%{name}-%{version}
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 Courier-IMAP is an IMAP server for Maildir mailboxes. This package contains
