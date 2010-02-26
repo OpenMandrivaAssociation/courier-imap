@@ -1,5 +1,5 @@
 %define name	courier-imap
-%define version 4.5.0
+%define version 4.7.0
 %define release %mkrel 1
 
 Name:		%{name}
@@ -238,5 +238,3 @@ rm -rf %{buildroot}
 %{_sbindir}/mkpop3dcert
 %{_mandir}/man8/mkpop3dcert.8*
 %{_datadir}/%{name}/mkpop3dcert
-
-
