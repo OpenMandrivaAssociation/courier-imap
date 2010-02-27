@@ -23,6 +23,8 @@ Requires(preun):	rpm-helper >= 0.19
 Requires(postun):	rpm-helper >= 0.19
 BuildRequires:	gdbm-devel
 BuildRequires:	openssl-devel
+BuildRequires:	libidn-devel
+BuildRequires:	locales-en
 BuildRequires:	courier-authlib-devel
 BuildRequires:	courier-authdaemon
 BuildRequires:	rpm-helper >= 0.21
@@ -71,6 +73,8 @@ chmod 644 maildir/README.sharedfolders.html imap/README.html
 %make
 
 %check
+# force utf8, otherwise tests fails
+export LC_ALL=en_US.UTF-8
 %{__make} check
 
 %install
