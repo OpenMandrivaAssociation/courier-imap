@@ -1,0 +1,45 @@
+diff -Naur courier-imap-4.1.1/imap/authenticate_auth.c courier-imap-4.1.1.oden/imap/authenticate_auth.c
+--- courier-imap-4.1.1/imap/authenticate_auth.c	2004-11-20 22:32:12.000000000 -0500
++++ courier-imap-4.1.1.oden/imap/authenticate_auth.c	2006-09-14 15:40:13.000000000 -0400
+@@ -130,7 +130,7 @@
+ 	p=getenv(authservice);
+ 
+ 	if (!p || !*p)
+-		p="imap";
++		p="courier-imap";
+ 
+ 	rc=auth_generic(p, authtype, authdata, login_callback, (void *)tag);
+ 	free(authtype);
+diff -Naur courier-imap-4.1.1/imap/imaplogin.c courier-imap-4.1.1.oden/imap/imaplogin.c
+--- courier-imap-4.1.1/imap/imaplogin.c	2005-10-01 11:32:16.000000000 -0400
++++ courier-imap-4.1.1.oden/imap/imaplogin.c	2006-09-14 15:39:59.000000000 -0400
+@@ -370,7 +370,7 @@
+ 		p=getenv(authservice);
+ 
+ 		if (!p || !*p)
+-			p="imap";
++			p="courier-imap";
+ 
+ 		rc=auth_login(p, userid, passwd, login_callback, (void *)tag);
+ 		courier_safe_printf("INFO: LOGIN FAILED, user=%s, ip=[%s]",
+diff -Naur courier-imap-4.1.1/imap/pop3login.c courier-imap-4.1.1.oden/imap/pop3login.c
+--- courier-imap-4.1.1/imap/pop3login.c	2005-02-19 23:49:06.000000000 -0500
++++ courier-imap-4.1.1.oden/imap/pop3login.c	2006-09-14 15:40:39.000000000 -0400
+@@ -368,7 +368,7 @@
+ 						strcat(strcpy(authservice, "AUTHSERVICE"),getenv("TCPLOCALPORT"));
+ 						q=getenv(authservice);
+ 						if (!q || !*q)
+-							q="pop3";
++							q="courier-pop3";
+ 
+ 						rc=auth_generic(q,
+ 							     authtype,
+@@ -416,7 +416,7 @@
+ 				strcat(strcpy(authservice, "AUTHSERVICE"),getenv("TCPLOCALPORT"));
+ 				q=getenv(authservice);
+ 				if (!q || !*q)
+-					q="pop3";
++					q="courier-pop3";
+ 
+ 				rc=auth_login(q, user, p, login_callback, NULL);
+ 				courier_safe_printf("INFO: LOGIN "
