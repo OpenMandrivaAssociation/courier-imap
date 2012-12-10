@@ -1,6 +1,2 @@
 sources:
-  "courier-imap-4.8.0.tar.bz2:"	f688cea87c66181362622ce9cbd4710d75268cfc
-  "courier-imap.imapd-init:"	588e29e0c5321d293a719542f9013f5a2e3187eb
-  "courier-imap.imapd-ssl-init:"	51dbadb3aeefab94921392082b755d9067b7bf3c
-  "courier-imap.pop3d-init:"	ec45527bc668ba639ef13c803e6903749f37bf5a
-  "courier-imap.pop3d-ssl-init:"	8ea7587f30178e1f4263cb29ed0baa3c10156fb8
+  "courier-imap-4.11.0.tar.bz2": b3ce4d8b7e8f57231e9b93a10b93cd2c1c571862

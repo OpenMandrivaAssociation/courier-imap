@@ -1,0 +1,106 @@
+#!/bin/sh
+#
+# chkconfig: 345 15 85
+# description: This startup script launches the courier pop daemon
+
+### BEGIN INIT INFO
+# Provides: courier-pop3d
+# Required-Start: courier-authdaemon
+# Required-Start: $network
+# Required-Stop: $network
+# Default-Start: 345
+# Short-Description: Courier pop daemon
+# Description: This startup script launches the courier pop daemon
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+NAME=courier-pop3d
+WRAPPER=courierlogger
+PROGRAM=@libdir@/courier-imap/couriertcpd
+LOCKFILE=/var/lock/subsys/courier-pop3d
+
+# Source courier pop3d and pop3dl-ssl configuration
+set -a
+. /etc/courier/pop3d
+. /etc/courier/pop3d-ssl
+
+start() {
+    # Check if it is already running
+    if [ ! -f $LOCKFILE ]; then
+	echo -n "Starting $NAME"
+	export PROXY_HOSTNAME=$PROXY_HOSTNAME
+	export TLS_PROTOCOL=$TLS_STARTTLS_PROTOCOL
+	daemon $WRAPPER -pid=$PIDFILE -start \
+	    $LOGGEROPTS \
+	    $PROGRAM \
+	    -address=$ADDRESS \
+	    -maxprocs=$MAXDAEMONS \
+	    -maxperip=$MAXPERIP \
+	    $TCPDOPTS \
+	    $PORT \
+	    /usr/sbin/pop3login \
+	    /usr/bin/pop3d \
+	    $MAILDIRPATH
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch $LOCKFILE
+	echo
+    fi
+}
+
+stop() {
+    echo -n "Stopping $NAME"
+    daemon $WRAPPER -pid=$PIDFILE -stop
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f $LOCKFILE
+    echo
+}
+
+reload() {
+    echo -n "Reloading $NAME"
+    daemon $WRAPPER -pid=$PIDFILE -restart
+    RETVAL=$?
+    echo
+}
+
+restart() {
+    stop
+    start
+}
+
+RETVAL=0
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+	restart
+	;;
+    reload)
+	reload
+	;;
+    condrestart)
+	if [ -f $LOCKFILE ]; then
+	    restart
+	fi
+	;;
+    condreload)
+	if [ -f $LOCKFILE ]; then
+	    reload
+	fi
+	;;
+    status)
+	status $PROGRAM
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart|reload|condrestart|condreload|status}"
+	RETVAL=1
+	;;
+esac
+
+exit $RETVAL

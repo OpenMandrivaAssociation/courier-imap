@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# chkconfig: 345 15 85
+# description: This startup script launches the courier imaps daemon
+
+### BEGIN INIT INFO
+# Provides: courier-imap-ssl
+# Required-Start: courier-authdaemon
+# Required-Start: $network
+# Required-Stop: $network
+# Default-Start: 345
+# Short-Description: Courier imaps daemon
+# Description: This startup script launches the courier imaps daemon
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+NAME=courier-imapd-ssl
+WRAPPER=courierlogger
+PROGRAM=@libdir@/courier-imap/couriertcpd
+LOCKFILE=/var/lock/subsys/courier-imapd-ssl
+
+# Source courier imapd and imapd-ssl configuration
+set -a
+. /etc/courier/imapd
+. /etc/courier/imapd-ssl
+
+start() {
+    # Check if it is already running
+    if [ ! -f $LOCKFILE ]; then
+	echo -n "Starting $NAME"
+	if [ -n "$TLS_CACHEFILE" ]; then
+	    rm -f $TLS_CACHEFILE
+	fi
+	umask $IMAP_UMASK
+	ulimit -v $IMAP_ULIMITD
+	export PROXY_HOSTNAME=$PROXY_HOSTNAME
+	export IMAP_TLS=1;
+	daemon $WRAPPER -pid=$SSLPIDFILE -start \
+	    $SSLLOGGEROPTS \
+	    $PROGRAM \
+	    -address=$SSLADDRESS \
+	    -maxprocs=$MAXDAEMONS \
+	    -maxperip=$MAXPERIP \
+	    $TCPDOPTS \
+	    $SSLPORT \
+	    $COURIERTLS -server -tcpd \
+	    /usr/sbin/imaplogin \
+	    /usr/bin/imapd \
+	    $MAILDIRPATH
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch $LOCKFILE
+	echo
+    fi
+}
+
+stop() {
+    echo -n "Stopping $NAME"
+    daemon $WRAPPER -pid=$SSLPIDFILE -stop
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f $LOCKFILE
+    echo
+}
+
+reload() {
+    echo -n "Reloading $NAME"
+    daemon $WRAPPER -pid=$SSLPIDFILE -restart
+    RETVAL=$?
+    echo
+}
+
+restart() {
+    stop
+    start
+}
+
+RETVAL=0
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+	restart
+	;;
+    reload)
+	reload
+	;;
+    condrestart)
+	if [ -f $LOCKFILE ]; then
+	    restart
+	fi
+	;;
+    condreload)
+	if [ -f $LOCKFILE ]; then
+	    reload
+	fi
+	;;
+    status)
+	status $PROGRAM
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart|reload|condrestart|condreload|status}"
+	RETVAL=1
+	;;
+esac
+
+exit $RETVAL

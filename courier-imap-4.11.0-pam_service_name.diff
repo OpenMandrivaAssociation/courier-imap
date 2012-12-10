@@ -1,7 +1,7 @@
-diff -Naur courier-imap-4.1.1/imap/authenticate_auth.c courier-imap-4.1.1.oden/imap/authenticate_auth.c
---- courier-imap-4.1.1/imap/authenticate_auth.c	2004-11-20 22:32:12.000000000 -0500
-+++ courier-imap-4.1.1.oden/imap/authenticate_auth.c	2006-09-14 15:40:13.000000000 -0400
-@@ -130,7 +130,7 @@
+diff -Naur courier-imap-4.11.0.orig/imap/authenticate_auth.c courier-imap-4.11.0/imap/authenticate_auth.c
+--- courier-imap-4.11.0.orig/imap/authenticate_auth.c	2012-10-09 11:07:43.255759323 +0400
++++ courier-imap-4.11.0/imap/authenticate_auth.c	2012-10-09 11:07:48.618933347 +0400
+@@ -134,7 +134,7 @@
  	p=getenv(authservice);
  
  	if (!p || !*p)
@@ -10,10 +10,10 @@ diff -Naur courier-imap-4.1.1/imap/authenticate_auth.c courier-imap-4.1.1.oden/i
  
  	rc=auth_generic(p, authtype, authdata, login_callback, (void *)tag);
  	free(authtype);
-diff -Naur courier-imap-4.1.1/imap/imaplogin.c courier-imap-4.1.1.oden/imap/imaplogin.c
---- courier-imap-4.1.1/imap/imaplogin.c	2005-10-01 11:32:16.000000000 -0400
-+++ courier-imap-4.1.1.oden/imap/imaplogin.c	2006-09-14 15:39:59.000000000 -0400
-@@ -370,7 +370,7 @@
+diff -Naur courier-imap-4.11.0.orig/imap/imaplogin.c courier-imap-4.11.0/imap/imaplogin.c
+--- courier-imap-4.11.0.orig/imap/imaplogin.c	2012-10-09 11:07:43.257759388 +0400
++++ courier-imap-4.11.0/imap/imaplogin.c	2012-10-09 11:07:48.618933347 +0400
+@@ -354,7 +354,7 @@
  		p=getenv(authservice);
  
  		if (!p || !*p)
@@ -22,9 +22,9 @@ diff -Naur courier-imap-4.1.1/imap/imaplogin.c courier-imap-4.1.1.oden/imap/imap
  
  		rc=auth_login(p, userid, passwd, login_callback, (void *)tag);
  		courier_safe_printf("INFO: LOGIN FAILED, user=%s, ip=[%s]",
-diff -Naur courier-imap-4.1.1/imap/pop3login.c courier-imap-4.1.1.oden/imap/pop3login.c
---- courier-imap-4.1.1/imap/pop3login.c	2005-02-19 23:49:06.000000000 -0500
-+++ courier-imap-4.1.1.oden/imap/pop3login.c	2006-09-14 15:40:39.000000000 -0400
+diff -Naur courier-imap-4.11.0.orig/imap/pop3login.c courier-imap-4.11.0/imap/pop3login.c
+--- courier-imap-4.11.0.orig/imap/pop3login.c	2012-10-09 11:07:43.255759323 +0400
++++ courier-imap-4.11.0/imap/pop3login.c	2012-10-09 11:07:48.618933347 +0400
 @@ -368,7 +368,7 @@
  						strcat(strcpy(authservice, "AUTHSERVICE"),getenv("TCPLOCALPORT"));
  						q=getenv(authservice);
