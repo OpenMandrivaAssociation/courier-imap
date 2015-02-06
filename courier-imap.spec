@@ -1,6 +1,6 @@
 Name:		courier-imap
 Version:	4.11.0
-Release:	1
+Release:	2
 Summary:	IMAP server that uses Maildirs
 License:	GPL
 Group:		System/Servers
