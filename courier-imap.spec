@@ -4,7 +4,7 @@ Release:	2
 Summary:	IMAP server that uses Maildirs
 License:	GPL
 Group:		System/Servers
-URL:		http://www.courier-mta.org
+URL:		https://www.courier-mta.org
 Source0:	http://prdownloads.sourceforge.net/courier/%{name}-%{version}.tar.bz2
 Source1:	%{name}.imapd-init
 Source2:	%{name}.imapd-ssl-init
