@@ -17,6 +17,11 @@ Requires(pre):	rpm-helper >= 0.21
 Requires(post):	rpm-helper >= 0.19
 Requires(preun):	rpm-helper >= 0.19
 Requires(postun):	rpm-helper >= 0.19
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	gdbm-devel
 BuildRequires:	openssl-devel
 BuildRequires:	libidn-devel
