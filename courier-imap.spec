@@ -117,6 +117,28 @@ install -d -m 755 %{buildroot}%{_initrddir}
 install -d -m 755 %{buildroot}%{_sysconfdir}/pam.d
 %makeinstall_std
 
+# The top-level names are libtool wrappers copied out of their .libs
+# directory. slibtool then installs the wrapper, which execs the build
+# tree binary, and find-debuginfo sees no ELF files.
+for pair in \
+	libs/imap/.libs/imapd|%{_bindir}/imapd \
+	libs/imap/.libs/pop3d|%{_bindir}/pop3d \
+	libs/maildir/.libs/maildirmake|%{_bindir}/maildirmake \
+	libs/maildir/.libs/maildiracl|%{_bindir}/maildiracl \
+	libs/maildir/.libs/deliverquota|%{_bindir}/deliverquota \
+	libs/maildir/.libs/maildirkw|%{_bindir}/maildirkw \
+	libs/makedat/.libs/makedat|%{_bindir}/makedat \
+	libs/imap/.libs/imaplogin|%{_sbindir}/imaplogin \
+	libs/imap/.libs/pop3login|%{_sbindir}/pop3login \
+	libs/makedat/.libs/makedatprog|%{_libdir}/%{name}/makedatprog \
+	libs/tcpd/.libs/couriertcpd|%{_libdir}/%{name}/couriertcpd \
+	libs/tcpd/.libs/couriertls|%{_bindir}/couriertls
+do
+	src=${pair%|*}
+	rel=${pair##*|}
+	install -p "$src" "%{buildroot}$rel"
+done
+
 # delete upstream init scripts and install custom one
 rm -f  %{buildroot}%{_libdir}/%{name}/*.rc
 install -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/courier-imapd
