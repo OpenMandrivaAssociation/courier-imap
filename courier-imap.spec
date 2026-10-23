@@ -1,6 +1,6 @@
 Name:		courier-imap
-Version:	4.11.0
-Release:	2
+Version:	6.0.7
+Release:	1
 Summary:	IMAP server that uses Maildirs
 License:	GPL
 Group:		System/Servers
@@ -10,7 +10,7 @@ Source1:	%{name}.imapd-init
 Source2:	%{name}.imapd-ssl-init
 Source3:	%{name}.pop3d-init
 Source4:	%{name}.pop3d-ssl-init
-Patch0:		courier-imap-4.11.0-pam_service_name.diff
+Patch0:		courier-imap-pam-service-name.patch
 Requires:	courier-base = %{version}
 Requires:	courier-authdaemon
 Requires(pre):	rpm-helper >= 0.21
@@ -24,9 +24,12 @@ BuildRequires:	slibtool
 BuildRequires:	make
 BuildRequires:	gdbm-devel
 BuildRequires:	openssl-devel
-BuildRequires:	libidn-devel
+BuildRequires:	pkgconfig(libidn2)
+BuildRequires:	pkgconfig(libpcre2-8)
+BuildRequires:	%mklibname courier-unicode -d
 BuildRequires:	locales-en
-BuildRequires:	courier-authlib-devel
+# 6.0.7 requires courier-authlib >= 0.71
+BuildRequires:	courier-authlib-devel >= 0.73.2
 BuildRequires:	courier-authdaemon
 BuildRequires:	rpm-helper >= 0.21
 
@@ -58,15 +61,16 @@ server suite.
 
 %prep
 %setup -q
-%patch0 -p1
-chmod 644 maildir/README.sharedfolders.html imap/README.html
+%patch 0 -p1
+chmod 644 libs/maildir/README.sharedfolders.html libs/imap/README.proxy.html
 
 
 %build
 export LD_LIBRARY_PATH="%{_libdir}/courier-authlib"
 %serverbuild
 %configure2_5x \
-    --enable-unicode \
+    --with-notice=unicode \
+    --with-db=gdbm \
     --libexec=%{_libdir}/%{name} \
     --datadir=%{_datadir}/%{name} \
     --sysconfdir=%{_sysconfdir}/courier
@@ -113,11 +117,6 @@ auth	include	system-auth
 account	include	system-auth
 session	include	system-auth
 EOF
-
-# fix name conflict for doc files
-cp imap/README imap/README.imap
-cp rfc822/ChangeLog rfc822/ChangeLog.rfc822
-cp unicode/README unicode/README.unicode
 
 # Maildir
 install -d -m 755 %{buildroot}%{_sysconfdir}/skel
@@ -190,23 +189,25 @@ rm -rf %{buildroot}
 
 %files -n courier-base
 %defattr(-,root,root)
-%doc INSTALL INSTALL.html NEWS README README.mdv
-%doc liblock/*.html
-%doc maildir/README.* maildir/*.html
-%doc rfc2045/*.html
-%doc rfc822/ChangeLog.rfc822 rfc822/rfc822.html
-%doc tcpd/README.* tcpd/*.html
-%doc unicode/README.*
-%doc maildir/maildirmake.html
+%doc INSTALL NEWS README README.mdv
+%doc libs/liblock/*.html
+%doc libs/maildir/README.*
+%doc libs/maildir/maildir.html libs/maildir/maildirkw.html libs/maildir/maildirquota.html libs/maildir/maildirwatch.html
+%doc libs/rfc2045/*.html
+%doc libs/rfc822/ChangeLog libs/rfc822/rfc822.html
+%doc libs/tcpd/README.* libs/tcpd/*.html
 %config(noreplace) %{_sysconfdir}/courier/quotawarnmsg.example
 %config(noreplace) %{_sysconfdir}/courier/shared
 %config(noreplace) %{_sysconfdir}/courier/shared.tmp
+%dir %{_sysconfdir}/courier/imapaccess
 %config(noreplace) %{_sysconfdir}/skel/Maildir
 %{_bindir}/maildirmake
 %{_bindir}/deliverquota
 %{_bindir}/couriertls
 %{_bindir}/maildirkw
 %{_bindir}/maildiracl
+%{_bindir}/makeimapaccess
+%{_bindir}/makedat
 %{_sbindir}/sharedindexinstall
 %{_sbindir}/sharedindexsplit
 %{_mandir}/man1/maildirmake.1*
@@ -214,11 +215,12 @@ rm -rf %{buildroot}
 %{_mandir}/man1/maildiracl.1*
 %{_mandir}/man1/maildirkw.1*
 %{_mandir}/man8/deliverquota.8*
+%{_mandir}/man8/makeimapaccess.8*
 %{_libdir}/%{name}
 
 %files
 %defattr(-,root,root)
-%doc imap/BUGS imap/ChangeLog imap/README.* imap/*.html
+%doc libs/imap/BUGS libs/imap/ChangeLog libs/imap/README.proxy libs/imap/README.proxy.html libs/imap/BUGS.html
 %config(noreplace) %{_sysconfdir}/pam.d/courier-imap
 %config(noreplace) %{_sysconfdir}/courier/imapd
 %config(noreplace) %{_sysconfdir}/courier/imapd-ssl
@@ -227,9 +229,12 @@ rm -rf %{buildroot}
 %{_bindir}/imapd
 %{_sbindir}/imaplogin
 %{_sbindir}/mkimapdcert
+%{_sbindir}/mkdhparams
 %{_mandir}/man8/imapd.8*
 %{_mandir}/man8/mkimapdcert.8*
+%{_mandir}/man8/mkdhparams.8*
 %{_datadir}/%{name}/mkimapdcert
+%{_datadir}/%{name}/mkdhparams
 
 %files -n courier-pop
 %defattr(-,root,root)

@@ -1,0 +1,46 @@
+The packaged PAM stacks are /etc/pam.d/courier-imap and
+/etc/pam.d/courier-pop3. Keep those service names as the fallback
+when AUTHSERVICE<port> is unset.
+
+--- a/libs/imap/authenticate_auth.C
++++ b/libs/imap/authenticate_auth.C
+@@ -137,7 +137,7 @@
+ 	p=getenv(authservice);
+ 
+ 	if (!p || !*p)
+-		p="imap";
++		p="courier-imap";
+ 
+ 	rc=auth_generic_meta(NULL, p, authtype, authdata,
+ 			     login_callback, (void *)tag);
+--- a/libs/imap/imaplogin.C
++++ b/libs/imap/imaplogin.C
+@@ -345,7 +345,7 @@
+ 		p=getenv(authservice);
+ 
+ 		if (!p || !*p)
+-			p="imap";
++			p="courier-imap";
+ 
+ 		rc=auth_login_meta(NULL, p, userid.c_str(), passwd.c_str(),
+ 				   login_callback, (void *)tag);
+--- a/libs/imap/pop3login.C
++++ b/libs/imap/pop3login.C
+@@ -443,7 +443,7 @@
+ 						strcat(strcpy(authservice, "AUTHSERVICE"),getenv("TCPLOCALPORT"));
+ 						q=getenv(authservice);
+ 
+-						char defaultpop3[]="pop3";
++						char defaultpop3[]="courier-pop3";
+ 
+ 						if (!q || !*q)
+ 							q=defaultpop3;
+@@ -496,7 +496,7 @@
+ 				strcat(strcpy(authservice, "AUTHSERVICE"),getenv("TCPLOCALPORT"));
+ 				q=getenv(authservice);
+ 
+-				char defaultpop3[]="pop3";
++				char defaultpop3[]="courier-pop3";
+ 
+ 				if (!q || !*q)
+ 					q=defaultpop3;
