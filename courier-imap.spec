@@ -93,6 +93,10 @@ export LD_LIBRARY_PATH="%{_libdir}/courier-authlib"
     --libexec=%{_libdir}/%{name} \
     --datadir=%{_datadir}/%{name} \
     --sysconfdir=%{_sysconfdir}/courier
+# Subdirectory rebuilds update m4 files that the top configure depends on.
+# Make would then rerun aclocal without the m4 include path.
+find . \( -name configure -o -name aclocal.m4 -o -name Makefile.in -o -name '*.h.in' \) -exec touch {} +
+find . \( -name config.status -o -name stamp-h -o -name stamp-h1 \) -exec touch {} +
 
 %make
 
