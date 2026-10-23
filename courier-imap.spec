@@ -26,7 +26,7 @@ BuildRequires:	slibtool
 BuildRequires:	make
 BuildRequires:	procps-ng
 BuildRequires:	gdbm-devel
-BuildRequires:	openssl-devel
+BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(libidn2)
 BuildRequires:	pkgconfig(libpcre2-8)
 BuildRequires:	%mklibname courier-unicode -d
