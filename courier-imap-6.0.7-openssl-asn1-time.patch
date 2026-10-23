@@ -1,0 +1,72 @@
+OpenSSL 4 hides ASN1_TIME. Convert it with ASN1_TIME_to_tm.
+
+--- a/libs/tcpd/libcouriertls.c
++++ b/libs/tcpd/libcouriertls.c
+@@ -56,6 +56,7 @@
+ #include	<arpa/inet.h>
+ 
+ #include	<sys/time.h>
++#include	<time.h>
+ 
+ struct proto_ops {
+     char *n;
+@@ -1842,49 +1843,23 @@
+ 
+ #define MAXDOMAINSIZE	256
+ 
+-static time_t asn1toTime(ASN1_TIME *asn1Time)
++static time_t asn1toTime(const ASN1_TIME *asn1Time)
+ {
+ 	struct tm tm;
+-	int offset;
++	time_t stamp;
+ 
+-	if (asn1Time == NULL || asn1Time->length < 13)
++	if (asn1Time == NULL)
+ 		return 0;
+ 
+ 	memset(&tm, 0, sizeof(tm));
++	/* OpenSSL keeps ASN1_TIME opaque. The result is GMT. */
++	if (ASN1_TIME_to_tm(asn1Time, &tm) != 1)
++		return 0;
+ 
+-#define N2(n)	((asn1Time->data[n]-'0')*10 + asn1Time->data[(n)+1]-'0')
+-
+-#define CPY(f,n) (tm.f=N2(n))
+-
+-	CPY(tm_year,0);
+-
+-	if(tm.tm_year < 50)
+-		tm.tm_year += 100; /* Sux */
+-
+-	CPY(tm_mon, 2);
+-	--tm.tm_mon;
+-	CPY(tm_mday, 4);
+-	CPY(tm_hour, 6);
+-	CPY(tm_min, 8);
+-	CPY(tm_sec, 10);
+-
+-	offset=0;
+-
+-	if (asn1Time->data[12] != 'Z')
+-	{
+-		if (asn1Time->length < 17)
+-			return 0;
+-
+-		offset=N2(13)*3600+N2(15)*60;
+-
+-		if (asn1Time->data[12] == '-')
+-			offset= -offset;
+-	}
+-
+-#undef N2
+-#undef CPY
+-
+-	return mktime(&tm)-offset;
++	stamp = timegm(&tm);
++	if (stamp == (time_t)-1)
++		return 0;
++	return stamp;
+ }
+ 
+ 
