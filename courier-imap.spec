@@ -87,7 +87,11 @@ done
 export slibtool_prefer_sltdl=no
 export LD_LIBRARY_PATH="%{_libdir}/courier-authlib"
 %serverbuild
+# Native configure passes --build and not --host. slibtool then skips
+# the ar probe in subdirs that do not canonicalize the host, and the
+# static archive recipe tries to execute cr.
 %configure2_5x \
+    --host=%{_target_platform} \
     --with-notice=unicode \
     --with-db=gdbm \
     --libexec=%{_libdir}/%{name} \
