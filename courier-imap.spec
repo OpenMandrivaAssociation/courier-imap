@@ -10,6 +10,7 @@ Source1:	%{name}.imapd-init
 Source2:	%{name}.imapd-ssl-init
 Source3:	%{name}.pop3d-init
 Source4:	%{name}.pop3d-ssl-init
+Source5:	%{name}.sysconftool.m4
 Patch0:		courier-imap-pam-service-name.patch
 Requires:	courier-base = %{version}
 Requires:	courier-authdaemon
@@ -18,10 +19,12 @@ Requires(post):	rpm-helper >= 0.19
 Requires(preun):	rpm-helper >= 0.19
 Requires(postun):	rpm-helper >= 0.19
 BuildRequires:	autoconf
+BuildRequires:	autoconf-archive
 BuildRequires:	automake
 BuildRequires:	libtool-base
 BuildRequires:	slibtool
 BuildRequires:	make
+BuildRequires:	procps-ng
 BuildRequires:	gdbm-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig(libidn2)
@@ -43,6 +46,7 @@ the full Courier mail server.  Install the Courier package instead.
 %package -n courier-base
 Summary:	Courier base files for POP and IMAP servers
 Group:		System/Servers
+Requires:	procps-ng
 Obsoletes:	maildirmake++
 
 %description -n courier-base
@@ -63,6 +67,10 @@ server suite.
 %setup -q
 %patch 0 -p1
 chmod 644 libs/maildir/README.sharedfolders.html libs/imap/README.proxy.html
+
+# The configure step reruns aclocal and ignores *.m4 files in the top directory.
+mkdir -p m4
+cp %{SOURCE5} m4/sysconftool.m4
 
 
 %build
