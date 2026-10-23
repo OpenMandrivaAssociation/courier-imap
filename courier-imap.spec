@@ -127,7 +127,6 @@ for pair in \
 	"libs/maildir/.libs/maildiracl|%{_bindir}/maildiracl" \
 	"libs/maildir/.libs/deliverquota|%{_bindir}/deliverquota" \
 	"libs/maildir/.libs/maildirkw|%{_bindir}/maildirkw" \
-	"libs/makedat/.libs/makedat|%{_bindir}/makedat" \
 	"libs/imap/.libs/imaplogin|%{_sbindir}/imaplogin" \
 	"libs/imap/.libs/pop3login|%{_sbindir}/pop3login" \
 	"libs/makedat/.libs/makedatprog|%{_libdir}/%{name}/makedatprog" \
