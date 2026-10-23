@@ -72,8 +72,19 @@ chmod 644 libs/maildir/README.sharedfolders.html libs/imap/README.proxy.html
 mkdir -p m4
 cp %{SOURCE5} m4/sysconftool.m4
 
+# slibtoolize installs a stub ltmain.sh. aclocal has to see slibtool's
+# macros, or the generated libtool script exits before it links.
+find . -name configure.ac | while read f; do
+	d=$(dirname "$f")
+	if grep -qE 'LT_INIT|LIBTOOL' "$f"; then
+		mkdir -p "$d/m4"
+		cp -a /usr/share/slibtool/slibtool.m4 "$d/m4/"
+		cp -a /usr/share/slibtool/sltdl.m4 "$d/m4/"
+	fi
+done
 
 %build
+export slibtool_prefer_sltdl=no
 export LD_LIBRARY_PATH="%{_libdir}/courier-authlib"
 %serverbuild
 %configure2_5x \
