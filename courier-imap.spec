@@ -1,6 +1,6 @@
 Name:		courier-imap
-Version:	6.0.7
-Release:	2
+Version:	6.0.8
+Release:	1
 Summary:	IMAP server that uses Maildirs
 License:	GPL
 Group:		System/Servers
@@ -12,7 +12,6 @@ Source3:	%{name}.pop3d-init
 Source4:	%{name}.pop3d-ssl-init
 Source5:	%{name}.sysconftool.m4
 Patch0:		courier-imap-pam-service-name.patch
-Patch1:		courier-imap-6.0.7-openssl-asn1-time.patch
 Requires:	courier-base = %{version}
 Requires:	courier-authdaemon
 Requires(pre):	rpm-helper >= 0.21
@@ -32,7 +31,7 @@ BuildRequires:	pkgconfig(libidn2)
 BuildRequires:	pkgconfig(libpcre2-8)
 BuildRequires:	%mklibname courier-unicode -d
 BuildRequires:	locales-en
-# 6.0.7 requires courier-authlib >= 0.71
+# 6.0.8 requires courier-authlib >= 0.71
 BuildRequires:	courier-authlib-devel >= 0.73.2
 BuildRequires:	courier-authdaemon
 BuildRequires:	rpm-helper >= 0.21
@@ -67,7 +66,6 @@ server suite.
 %prep
 %setup -q
 %patch 0 -p1
-%patch 1 -p1
 chmod 644 libs/maildir/README.sharedfolders.html libs/imap/README.proxy.html
 
 # The configure step reruns aclocal and ignores *.m4 files in the top directory.
